@@ -4,6 +4,8 @@ from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from jose import jwt
 from datetime import datetime, timedelta
+from passlib.context import CryptContext
+from fastapi.security import OAuth2PasswordBearer
 import asyncio
 import os
 import bcrypt  # Use this directly
@@ -19,9 +21,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Security setup
 SECRET_KEY = "your-secret-key-change-this-in-production"
 ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth")
 # Hash a password
 def get_password_hash(password: str):
     pwd_bytes = password.encode('utf-8')
